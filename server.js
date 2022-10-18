@@ -5,7 +5,14 @@ const App = Express();
 const PORT = process.env.PORT || 8080;
 
 App.get("/", (req, res) => {
-  res.send({ message: "This app is live now." });
+  const testToken = process.env.TEST_SECRET;
+  if (testToken === "Thisisatestsecret")
+  { 
+    res.send({ message: "I found your secret." });
+  }
+  else {
+    res.send({ message: "I did not find your secret." });
+  }
 });
 
 App.listen(PORT, () => {
