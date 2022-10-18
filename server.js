@@ -1,18 +1,33 @@
 require("dotenv").config();
 const Express = require("express");
+const supa = require("@supabase/supabase-js");
 const App = Express();
 
 const PORT = process.env.PORT || 8080;
 
+const supabaseUrl = "https://vuhdrozeicqzvbmnorrl.supabase.co";
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = supa.createClient(supabaseUrl, supabaseKey);
+
+const testSupabase = async () => {
+  let { data: users, error } = await supabase.from("users").select("*");
+  console.log("All users", users);
+  // const users = {id: 1, name: "Sneha"};
+  return { users };
+};
+
 App.get("/", (req, res) => {
-  const testToken = process.env.TEST_SECRET;
-  if (testToken === "Thisisatestsecret")
-  { 
-    res.send({ message: "I found your secret." });
-  }
-  else {
-    res.send({ message: "I did not find your secret." });
-  }
+  res.send({
+    message: "You are on the homepage or index route and your are live.",
+  });
+});
+
+App.get("/users", (req, res) => {
+  testSupabase().then((response) => {
+    const { users } = response;
+    console.log("Got users for route.", users)
+    res.send({ users: users });
+  });
 });
 
 App.listen(PORT, () => {
