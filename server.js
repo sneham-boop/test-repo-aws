@@ -19,12 +19,24 @@ App.use(
   })
 );
 
+// CORS Setup
+var allowlist = ["https://werun-app.netlify.app"];
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (allowlist.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
+
 const PORT = process.env.PORT || 8080;
 
 // Import db
 const db = require("./lib/db");
 
-App.use(cors());
+// App.use(cors());
 
 App.get("/", (req, res, next) => {
   res.send({
@@ -33,7 +45,7 @@ App.get("/", (req, res, next) => {
 });
 
 // Get all users
-App.get("/api/users", (req, res, next) => {
+App.get("/api/users", cors(corsOptionsDelegate), (req, res, next) => {
   db.getUsers().then((response) => {
     const { users, error } = response;
     if (error) return res.send({ message: "No users were found." });
@@ -43,7 +55,7 @@ App.get("/api/users", (req, res, next) => {
 });
 
 // Get all runs
-App.get("/api/runs", (req, res, next) => {
+App.get("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
   db.getRuns().then((response) => {
     const { runs, error } = response;
     if (error)
