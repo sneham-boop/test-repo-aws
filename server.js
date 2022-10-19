@@ -34,6 +34,7 @@ const corsOptionsDelegate = function (req, callback) {
   }
   callback(null, corsOptions) // callback expects two parameters: error and options
 }
+App.options('*', cors()); 
 
 const PORT = process.env.PORT || 8080;
 
