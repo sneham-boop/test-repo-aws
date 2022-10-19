@@ -256,9 +256,10 @@ App.post("/api/logout", (req, res) => {
 App.get("/api/runs/runner/:id", (req, res) => {
   const { id } = req.params;
 
-  db.getRunsForRunner(id)
+  db.getRunsRunner(id)
     .then((response) => {
       const { runnerRuns } = response;
+      if(!runnerRuns) return res.send({message: "No runs for this runner!"});
       res.send({ runnerRuns });
     })
     .catch((e) => {
