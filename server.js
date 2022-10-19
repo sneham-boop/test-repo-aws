@@ -154,7 +154,17 @@ App.post("/api/login", (req, res) => {
   const { email, password } = req.body;
   console.log("A customer tried to log in.", email, password);
   if (!email) res.send({ message: "We could not log you in at this time." });
-  res.send({ user });
+  
+  db.getUser().then(()=>{
+    const { user, error } = response;
+    if (error)
+      return res.send({
+        message: "We could not find this user.",
+      });
+
+    res.send({ user });
+  })
+
   // db.getUserByEmail({ email })
   //   .then(({ user }) => {
   //     if (Bcrypt.compareSync(password, user.password)) {
