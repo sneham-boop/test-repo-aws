@@ -49,7 +49,7 @@ App.get("/", cors(corsOptions),(req, res, next) => {
 });
 
 // Get all users
-App.get("/api/users", (req, res, next) => {
+App.get("/api/users", cors(corsOptions), (req, res, next) => {
   db.getUsers().then((response) => {
     const { users, error } = response;
     if (error) return res.send({ message: "No users were found." });
@@ -72,7 +72,7 @@ App.get("/api/runs", cors(corsOptions), (req, res, next) => {
 });
 
 // Get image for run
-App.get("api/runs/image/:id", (req, res, next) => {
+App.get("api/runs/image/:id", cors(corsOptions), (req, res, next) => {
   const runID = req.params.id;
   const path = `./uploads/${runID}.jpeg`;
   // Checking if the path exists
@@ -158,7 +158,7 @@ App.get("api/runs/image/:id", (req, res, next) => {
 // });
 
 // User login
-App.post("/api/login", (req, res, next) => {
+App.post("/api/login", cors(corsOptions), (req, res, next) => {
   const { email, password } = req.body;
   if (!email) res.send({ message: "We could not log you in at this time." });
 
@@ -179,7 +179,7 @@ App.post("/api/login", (req, res, next) => {
 });
 
 // User logout
-App.post("/api/logout", (req, res, next) => {
+App.post("/api/logout", cors(corsOptions), (req, res, next) => {
   req.session.user = null;
   res.send({ user: null, message: "User was successfully logged out." });
 });
@@ -267,7 +267,7 @@ App.post("/api/logout", (req, res, next) => {
 
 // Users runs
 // Runner
-App.get("/api/runs/runner/:id", (req, res, next) => {
+App.get("/api/runs/runner/:id", cors(corsOptions), (req, res, next) => {
   const { id } = req.params;
 
   db.getRunsRunner(id)
@@ -284,7 +284,7 @@ App.get("/api/runs/runner/:id", (req, res, next) => {
 });
 
 // Planner
-App.get("/api/runs/planner/:id", (req, res, next) => {
+App.get("/api/runs/planner/:id", cors(corsOptions), (req, res, next) => {
   const { id } = req.params;
 
   db.getRunsPlanner(id)
