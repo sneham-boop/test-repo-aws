@@ -1,5 +1,6 @@
 require("dotenv").config();
 const Express = require("express");
+const cors = require('cors');
 const supa = require("@supabase/supabase-js");
 const App = Express();
 
@@ -16,13 +17,15 @@ const testSupabase = async () => {
   return { users };
 };
 
-App.get("/", (req, res) => {
+App.use(cors());
+
+App.get("/", (req, res, next) => {
   res.send({
     message: "You are on the homepage or index route and your are live.",
   });
 });
 
-App.get("/users", (req, res) => {
+App.get("/users", (req, res, next) => {
   testSupabase().then((response) => {
     const { users } = response;
     console.log("Got users for route.", users)
