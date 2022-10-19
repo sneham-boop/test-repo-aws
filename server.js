@@ -9,7 +9,7 @@ const CookieSession = require("cookie-session");
 // Express Configuration
 const App = Express();
 App.use(BodyParser.urlencoded({ extended: false }));
-App.use(BodyParser.json());
+App.use(BodyParser.json()); 
 App.use(Express.static("public"));
 App.use(
   CookieSession({
@@ -168,18 +168,6 @@ App.post("/api/logout", (req, res) => {
   res.send({ user: null, message: "User was successfully logged out." });
 });
 
-//Runs
-// App.get("/api/runs", (req, res) => {
-//   db.getAllRuns()
-//     .then((response) => {
-//       const { runs } = response;
-//       res.send({ runs });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
 
 // App.get("/api/runs/:id", (req, res) => {
 //   const { id } = req.params;
@@ -194,32 +182,6 @@ App.post("/api/logout", (req, res) => {
 //     });
 // });
 
-// // Get image for run
-// App.get("/api/runs/image/:id", (req, res) => {
-//   const runID = req.params.id;
-//   const path = `./uploads/${runID}.jpeg`;
-//   // Checking if the path exists
-//   fs.exists(path, function (exists) {
-//     if (!exists) {
-//       res.writeHead(404, {
-//         "Content-Type": "text/plain",
-//       });
-//       res.end("404 Not Found");
-//       return;
-//     }
-
-//     // Setting the headers
-//     res.writeHead(200, {
-//       "Content-Type": "image/jpeg",
-//     });
-
-//     // Reading the file
-//     fs.readFile(path, function (err, content) {
-//       // Serving the image
-//       res.end(content);
-//     });
-//   });
-// });
 
 // // Add new image when creating a new run
 // App.post(
@@ -289,21 +251,21 @@ App.post("/api/logout", (req, res) => {
 //   res.send();
 // });
 
-// // Users runs
-// // Runner
-// App.get("/api/runs/runner/:id", (req, res) => {
-//   const { id } = req.params;
+// Users runs
+// Runner
+App.get("/api/runs/runner/:id", (req, res) => {
+  const { id } = req.params;
 
-//   db.getRunsForRunner(id)
-//     .then((response) => {
-//       const { runnerRuns } = response;
-//       res.send({ runnerRuns });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
+  db.getRunsForRunner(id)
+    .then((response) => {
+      const { runnerRuns } = response;
+      res.send({ runnerRuns });
+    })
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
+});
 
 // // Planner
 // App.get("/api/runs/planner/:id", (req, res) => {
