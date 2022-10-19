@@ -42,7 +42,7 @@ const db = require("./lib/db");
 
 // App.use(cors());
 
-App.get("/", (req, res, next) => {
+App.get("/", cors(corsOptions), (req, res, next) => {
   res.send({
     message: "You are on the homepage or index route and your are live.",
   });
