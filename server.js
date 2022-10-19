@@ -20,7 +20,7 @@ App.use(
 );
 
 // CORS Setup
-var allowlist = ["https://werun-app.netlify.app"];
+var allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
