@@ -30,10 +30,10 @@ App.use(
 //   }
 //   callback(null, corsOptions); // callback expects two parameters: error and options
 // };
-const corsOptions = {
-  origin: 'https://werun-app.netlify.app',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+// const corsOptions = {
+//   origin: 'https://werun-app.netlify.app',
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
 
 const PORT = process.env.PORT || 8080;
 
@@ -42,14 +42,14 @@ const db = require("./lib/db");
 
 // App.use(cors());
 
-App.get("/", cors(corsOptions), (req, res, next) => {
+App.get("/", (req, res, next) => {
   res.send({
     message: "You are on the homepage or index route and your are live.",
   });
 });
 
 // Get all users
-App.get("/api/users", cors(corsOptions), (req, res, next) => {
+App.get("/api/users", (req, res, next) => {
   db.getUsers().then((response) => {
     const { users, error } = response;
     if (error) return res.send({ message: "No users were found." });
@@ -59,7 +59,7 @@ App.get("/api/users", cors(corsOptions), (req, res, next) => {
 });
 
 // Get all runs
-App.get("/api/runs", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs", (req, res, next) => {
   db.getRuns().then((response) => {
     const { runs, error } = response;
     if (error)
