@@ -19,17 +19,6 @@ App.use(
   })
 );
 
-// CORS Setup
-// var allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
-// var corsOptions = function (req, callback) {
-//   var corsOptions;
-//   if (allowlist.indexOf(req.header("Origin")) !== -1) {
-//     corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-//   } else {
-//     corsOptions = { origin: false }; // disable CORS for this request
-//   }
-//   callback(null, corsOptions); // callback expects two parameters: error and options
-// };
 const corsOptions = {
   origin: 'https://werun-app.netlify.app',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -72,7 +61,7 @@ App.get("/api/runs", cors(corsOptions), (req, res, next) => {
 });
 
 // Get image for run
-App.get("api/runs/image/:id", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs/image/:id", cors(corsOptions), (req, res, next) => {
   const runID = req.params.id;
   const path = `./uploads/${runID}.jpeg`;
   // Checking if the path exists
