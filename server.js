@@ -6,7 +6,6 @@ const supa = require("@supabase/supabase-js");
 const fs = require("fs");
 const App = Express();
 
-
 // Express Configuration
 App.use(BodyParser.urlencoded({ extended: false }));
 App.use(BodyParser.json());
@@ -27,7 +26,7 @@ const testSupabase = async () => {
 
 const getRuns = async () => {
   let { data: runs, error } = await supabase.from("runs").select("*");
-  return { runs };
+  return { runs, error };
 };
 
 App.use(cors());
@@ -46,15 +45,20 @@ App.get("/users", (req, res, next) => {
   });
 });
 
-App.get("/runs", (req, res, next) => {
+App.get("/api/runs", (req, res, next) => {
   getRuns().then((response) => {
-    const { runs } = response;
-    res.send({ runs: runs });
+    const { runs, error } = response;
+    if (error)
+      return res.send({
+        message: "We could not find any runs for you at this time.",
+      });
+
+    res.send({ runs });
   });
 });
 
 // Get image for run
-App.get("/runs/image/:id", (req, res) => {
+App.get("api/runs/image/:id", (req, res) => {
   const runID = req.params.id;
   const path = `./uploads/${runID}.jpeg`;
   // Checking if the path exists
@@ -80,7 +84,6 @@ App.get("/runs/image/:id", (req, res) => {
   });
 });
 
-
 //Users
 // App.get("/api/users", (req, res) => {
 //   // const users = testSupabase();
@@ -90,7 +93,7 @@ App.get("/runs/image/:id", (req, res) => {
 //     const { users } = response;
 //     res.send({users: users});
 //   });
-  
+
 //   // db.getAllUsers()
 //   //   .then((response) => {
 //   //     const { users } = response;
@@ -159,29 +162,29 @@ App.get("/runs/image/:id", (req, res) => {
 //   res.send();
 // });
 
-// // User login
-// App.post("/api/login", (req, res) => {
-//   const { email, password } = req.body;
+// User login
+App.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
 
-//   db.getUserByEmail({ email })
-//     .then(({ user }) => {
-//       if (Bcrypt.compareSync(password, user.password)) {
-//         req.session.user = user;
-//         res.send({ user });
-//         return;
-//       }
-//       res.send({ message: "User not found." });
-//     })
-//     .catch((e) => res.send(e));
-// });
+  // db.getUserByEmail({ email })
+  //   .then(({ user }) => {
+  //     if (Bcrypt.compareSync(password, user.password)) {
+  //       req.session.user = user;
+  //       res.send({ user });
+  //       return;
+  //     }
+  //     res.send({ message: "User not found." });
+  //   })
+  //   .catch((e) => res.send(e));
+});
 
-// // User logout
-// App.post("/api/logout", (req, res) => {
-//   req.session.user = null;
-//   res.send({ user: null });
-// });
+// User logout
+App.post("/api/logout", (req, res) => {
+  req.session.user = null;
+  res.send({ user: null });
+});
 
-// //Runs
+//Runs
 // App.get("/api/runs", (req, res) => {
 //   db.getAllRuns()
 //     .then((response) => {
@@ -354,7 +357,6 @@ App.get("/runs/image/:id", (req, res) => {
 //       res.send(e);
 //     });
 // });
-
 
 App.listen(PORT, () => {
   console.log(
