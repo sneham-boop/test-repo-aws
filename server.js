@@ -2,7 +2,6 @@ require("dotenv").config();
 const Express = require("express");
 const BodyParser = require("body-parser");
 const cors = require("cors");
-const supa = require("@supabase/supabase-js");
 const fs = require("fs");
 const App = Express();
 
@@ -13,21 +12,8 @@ App.use(Express.static("public"));
 
 const PORT = process.env.PORT || 8080;
 
-const supabaseUrl = "https://vuhdrozeicqzvbmnorrl.supabase.co";
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = supa.createClient(supabaseUrl, supabaseKey);
-
-const testSupabase = async () => {
-  let { data: users, error } = await supabase.from("users").select("*");
-  console.log("All users", users);
-  // const users = {id: 1, name: "Sneha"};
-  return { users };
-};
-
-const getRuns = async () => {
-  let { data: runs, error } = await supabase.from("runs").select("*");
-  return { runs, error };
-};
+// Import db
+const db = require("./lib/db");
 
 App.use(cors());
 
@@ -37,16 +23,17 @@ App.get("/", (req, res, next) => {
   });
 });
 
-App.get("/users", (req, res, next) => {
-  testSupabase().then((response) => {
-    const { users } = response;
-    console.log("Got users for route.", users);
+App.get("/api/users", (req, res, next) => {
+  db.getUsers().then((response) => {
+    const { users, error } = response;
+    if (error) return res.send({ message: "No users were found." });
+
     res.send({ users: users });
   });
 });
 
 App.get("/api/runs", (req, res, next) => {
-  getRuns().then((response) => {
+  db.getRuns().then((response) => {
     const { runs, error } = response;
     if (error)
       return res.send({
@@ -165,7 +152,9 @@ App.get("api/runs/image/:id", (req, res) => {
 // User login
 App.post("/api/login", (req, res) => {
   const { email, password } = req.body;
-
+  console.log("A customer tried to log in.", email, password);
+  if (!email) res.send({ message: "We could not log you in at this time." });
+  res.send({ user });
   // db.getUserByEmail({ email })
   //   .then(({ user }) => {
   //     if (Bcrypt.compareSync(password, user.password)) {
