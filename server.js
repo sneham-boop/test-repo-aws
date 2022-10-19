@@ -3,12 +3,21 @@ const Express = require("express");
 const BodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
-const App = Express();
+const Bcrypt = require("bcryptjs");
+const CookieSession = require("cookie-session");
 
 // Express Configuration
+const App = Express();
 App.use(BodyParser.urlencoded({ extended: false }));
 App.use(BodyParser.json());
 App.use(Express.static("public"));
+App.use(
+  CookieSession({
+    name: "session",
+    keys: ["key1", "key2"],
+    maxAge: 30 * 60 * 1000, // 30 minutes session
+  })
+);
 
 const PORT = process.env.PORT || 8080;
 
@@ -152,29 +161,22 @@ App.get("api/runs/image/:id", (req, res) => {
 // User login
 App.post("/api/login", (req, res) => {
   const { email, password } = req.body;
-  console.log("A customer tried to log in.", email, password);
   if (!email) res.send({ message: "We could not log you in at this time." });
-  
-  db.getUser().then(()=>{
+
+  db.getUser(email).then((response) => {
     const { user, error } = response;
-    if (error)
+    if (error || !user)
       return res.send({
         message: "We could not find this user.",
       });
 
-    res.send({ user });
-  })
-
-  // db.getUserByEmail({ email })
-  //   .then(({ user }) => {
-  //     if (Bcrypt.compareSync(password, user.password)) {
-  //       req.session.user = user;
-  //       res.send({ user });
-  //       return;
-  //     }
-  //     res.send({ message: "User not found." });
-  //   })
-  //   .catch((e) => res.send(e));
+    if (Bcrypt.compareSync(password, user.password)) {
+      req.session.user = user;
+      res.send({ user });
+      return;
+    }
+    res.send({ message: "User not found." });
+  });
 });
 
 // User logout
