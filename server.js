@@ -9,7 +9,7 @@ const CookieSession = require("cookie-session");
 // Express Configuration
 const App = Express();
 App.use(BodyParser.urlencoded({ extended: false }));
-App.use(BodyParser.json()); 
+App.use(BodyParser.json());
 App.use(Express.static("public"));
 App.use(
   CookieSession({
@@ -168,7 +168,6 @@ App.post("/api/logout", (req, res) => {
   res.send({ user: null, message: "User was successfully logged out." });
 });
 
-
 // App.get("/api/runs/:id", (req, res) => {
 //   const { id } = req.params;
 //   db.getRun(id)
@@ -181,7 +180,6 @@ App.post("/api/logout", (req, res) => {
 //       res.send(e);
 //     });
 // });
-
 
 // // Add new image when creating a new run
 // App.post(
@@ -258,8 +256,9 @@ App.get("/api/runs/runner/:id", (req, res) => {
 
   db.getRunsRunner(id)
     .then((response) => {
-      const { runnerRuns } = response;
-      if(!runnerRuns) return res.send({message: "No runs for this runner!"});
+      const { runnerRuns, error } = response;
+      if (!runnerRuns || error)
+        return res.send({ message: "No runs for this runner!" });
       res.send({ runnerRuns });
     })
     .catch((e) => {
@@ -268,20 +267,22 @@ App.get("/api/runs/runner/:id", (req, res) => {
     });
 });
 
-// // Planner
-// App.get("/api/runs/planner/:id", (req, res) => {
-//   const { id } = req.params;
+// Planner
+App.get("/api/runs/planner/:id", (req, res) => {
+  const { id } = req.params;
 
-//   db.getRunsForPlanner(id)
-//     .then((response) => {
-//       const { plannerRuns } = response;
-//       res.send({ plannerRuns });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
+  db.getRunsPlanner(id)
+    .then((response) => {
+      const { plannerRuns, error } = response;
+      if (!plannerRuns || error)
+        return res.send({ message: "No runs for this planner!" });
+      res.send({ plannerRuns });
+    })
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
+});
 
 // // Register for a run
 // App.post("/api/register", (req, res) => {
