@@ -32,6 +32,7 @@ App.get("/", (req, res, next) => {
   });
 });
 
+// Get all users
 App.get("/api/users", (req, res, next) => {
   db.getUsers().then((response) => {
     const { users, error } = response;
@@ -41,6 +42,7 @@ App.get("/api/users", (req, res, next) => {
   });
 });
 
+// Get all runs
 App.get("/api/runs", (req, res, next) => {
   db.getRuns().then((response) => {
     const { runs, error } = response;
@@ -81,25 +83,6 @@ App.get("api/runs/image/:id", (req, res) => {
 });
 
 //Users
-// App.get("/api/users", (req, res) => {
-//   // const users = testSupabase();
-//   // console.log("These are the users",users);
-//   // res.send({users: users});
-//   testSupabase().then((response) => {
-//     const { users } = response;
-//     res.send({users: users});
-//   });
-
-//   // db.getAllUsers()
-//   //   .then((response) => {
-//   //     const { users } = response;
-//   //     res.send({ users });
-//   //   })
-//   //   .catch((e) => {
-//   //     console.error(e);
-//   //     res.send(e);
-//   //   });
-// });
 
 // App.get("/api/users/:id", (req, res) => {
 //   const { id } = req.params;
@@ -182,7 +165,7 @@ App.post("/api/login", (req, res) => {
 // User logout
 App.post("/api/logout", (req, res) => {
   req.session.user = null;
-  res.send({ user: null });
+  res.send({ user: null, message: "User was successfully logged out." });
 });
 
 //Runs
