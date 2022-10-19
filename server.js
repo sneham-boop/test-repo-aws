@@ -19,9 +19,20 @@ App.use(
   })
 );
 
-const corsOptions = {
-  origin: 'https://werun-app.netlify.app',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// const corsOptionsDelegate = {
+//   origin: 'https://werun-app.netlify.app',
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
+
+const allowlist = ['https://werun-app.netlify.app', 'http://localhost:3000']
+const corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false } // disable CORS for this request
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
 }
 
 const PORT = process.env.PORT || 8080;
@@ -31,14 +42,14 @@ const db = require("./lib/db");
 
 // App.use(cors());
 
-App.get("/", cors(corsOptions),(req, res, next) => {
+App.get("/", cors(corsOptionsDelegate),(req, res, next) => {
   res.send({
     message: "You are on the homepage or index route and your are live.",
   });
 });
 
 // Get all users
-App.get("/api/users", cors(corsOptions), (req, res, next) => {
+App.get("/api/users", cors(corsOptionsDelegate), (req, res, next) => {
   db.getUsers().then((response) => {
     const { users, error } = response;
     if (error) return res.send({ message: "No users were found." });
@@ -48,7 +59,7 @@ App.get("/api/users", cors(corsOptions), (req, res, next) => {
 });
 
 // Get all runs
-App.get("/api/runs", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
   db.getRuns().then((response) => {
     const { runs, error } = response;
     if (error)
@@ -61,7 +72,7 @@ App.get("/api/runs", cors(corsOptions), (req, res, next) => {
 });
 
 // Get image for run
-App.get("/api/runs/image/:id", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs/image/:id", cors(corsOptionsDelegate), (req, res, next) => {
   const runID = req.params.id;
   const path = `./uploads/${runID}.jpeg`;
   // Checking if the path exists
@@ -147,7 +158,7 @@ App.get("/api/runs/image/:id", cors(corsOptions), (req, res, next) => {
 // });
 
 // User login
-App.post("/api/login", cors(corsOptions), (req, res, next) => {
+App.post("/api/login", cors(corsOptionsDelegate), (req, res, next) => {
   const { email, password } = req.body;
   if (!email) res.send({ message: "We could not log you in at this time." });
 
@@ -168,7 +179,7 @@ App.post("/api/login", cors(corsOptions), (req, res, next) => {
 });
 
 // User logout
-App.post("/api/logout", cors(corsOptions), (req, res, next) => {
+App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
   req.session.user = null;
   res.send({ user: null, message: "User was successfully logged out." });
 });
@@ -256,7 +267,7 @@ App.post("/api/logout", cors(corsOptions), (req, res, next) => {
 
 // Users runs
 // Runner
-App.get("/api/runs/runner/:id", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs/runner/:id", cors(corsOptionsDelegate), (req, res, next) => {
   const { id } = req.params;
 
   db.getRunsRunner(id)
@@ -273,7 +284,7 @@ App.get("/api/runs/runner/:id", cors(corsOptions), (req, res, next) => {
 });
 
 // Planner
-App.get("/api/runs/planner/:id", cors(corsOptions), (req, res, next) => {
+App.get("/api/runs/planner/:id", cors(corsOptionsDelegate), (req, res, next) => {
   const { id } = req.params;
 
   db.getRunsPlanner(id)
