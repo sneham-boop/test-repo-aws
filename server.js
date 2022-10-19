@@ -1,6 +1,6 @@
 require("dotenv").config();
 const Express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const supa = require("@supabase/supabase-js");
 const App = Express();
 
@@ -17,6 +17,11 @@ const testSupabase = async () => {
   return { users };
 };
 
+const getRuns = async () => {
+  let { data: runs, error } = await supabase.from("runs").select("*");
+  return { runs };
+};
+
 App.use(cors());
 
 App.get("/", (req, res, next) => {
@@ -28,8 +33,15 @@ App.get("/", (req, res, next) => {
 App.get("/users", (req, res, next) => {
   testSupabase().then((response) => {
     const { users } = response;
-    console.log("Got users for route.", users)
+    console.log("Got users for route.", users);
     res.send({ users: users });
+  });
+});
+
+App.get("/runs", (req, res, next) => {
+  getRuns().then((response) => {
+    const { runs } = response;
+    res.send({ runs: runs });
   });
 });
 
