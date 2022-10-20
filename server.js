@@ -24,17 +24,17 @@ App.use(
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 // }
 
-const allowlist = ['https://werun-app.netlify.app', 'http://localhost:3000']
+const allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions;
-  if (allowlist.indexOf(req.header('Origin')) !== -1) {
-    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+  if (allowlist.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
   } else {
-    corsOptions = { origin: false } // disable CORS for this request
+    corsOptions = { origin: false }; // disable CORS for this request
   }
-  callback(null, corsOptions) // callback expects two parameters: error and options
-}
-App.options('*', cors()); 
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
+App.options("*", cors());
 
 const PORT = process.env.PORT || 8080;
 
@@ -43,7 +43,7 @@ const db = require("./lib/db");
 
 // App.use(cors());
 
-App.get("/", cors(corsOptionsDelegate),(req, res, next) => {
+App.get("/", cors(corsOptionsDelegate), (req, res, next) => {
   res.send({
     message: "You are on the homepage or index route and your are live.",
   });
@@ -127,7 +127,7 @@ App.post("/api/users", cors(corsOptionsDelegate), (req, res, next) => {
         message:
           "Account created successfully! You will shortly receive a text message to confirm.",
         user: user,
-        error: error
+        error: error,
       });
     })
     .catch((e) => {
@@ -135,14 +135,6 @@ App.post("/api/users", cors(corsOptionsDelegate), (req, res, next) => {
       res.send(e);
     });
 });
-
-// App.put("/api/users/:id", (req, res) => {
-//   res.send();
-// });
-
-// App.delete("/api/users/:id", (req, res) => {
-//   res.send();
-// });
 
 // User login
 App.post("/api/login", cors(corsOptionsDelegate), (req, res, next) => {
@@ -171,23 +163,10 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
   res.send({ user: null, message: "User was successfully logged out." });
 });
 
-// App.get("/api/runs/:id", (req, res) => {
-//   const { id } = req.params;
-//   db.getRun(id)
-//     .then((response) => {
-//       const { run } = response;
-//       res.send({ run });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
-
 // // Add new image when creating a new run
 // App.post(
 //   "/api/image/:runID",
-//   BodyParser.raw({ type: ["image/jpeg", "image/png"], limit: "5mb" }),
+//   [cors(corsOptionsDelegate), BodyParser.raw({ type: ["image/jpeg", "image/png"], limit: "5mb" })],
 //   (req, res) => {
 //     const { runID } = req.params;
 //     try {
@@ -203,7 +182,7 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
 //   }
 // );
 
-// App.post("/api/runs", (req, res) => {
+// App.post("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
 //   const {
 //     name,
 //     description,
@@ -244,7 +223,6 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
 //     });
 // });
 
-
 // Users runs
 // Runner
 App.get("/api/runs/runner/:id", cors(corsOptionsDelegate), (req, res, next) => {
@@ -264,43 +242,47 @@ App.get("/api/runs/runner/:id", cors(corsOptionsDelegate), (req, res, next) => {
 });
 
 // Planner
-App.get("/api/runs/planner/:id", cors(corsOptionsDelegate), (req, res, next) => {
-  const { id } = req.params;
+App.get(
+  "/api/runs/planner/:id",
+  cors(corsOptionsDelegate),
+  (req, res, next) => {
+    const { id } = req.params;
 
-  db.getRunsPlanner(id)
+    db.getRunsPlanner(id)
+      .then((response) => {
+        const { plannerRuns, error } = response;
+        if (!plannerRuns || error)
+          return res.send({ message: "No runs for this planner!" });
+        res.send({ plannerRuns });
+      })
+      .catch((e) => {
+        console.error(e);
+        res.send(e);
+      });
+  }
+);
+
+// Register for a run
+App.post("/api/register", cors(corsOptionsDelegate), (req, res, next) => {
+  const { runner_id, run_id } = req.body;
+
+  db.registerForARun({ runner_id, run_id })
     .then((response) => {
-      const { plannerRuns, error } = response;
-      if (!plannerRuns || error)
-        return res.send({ message: "No runs for this planner!" });
-      res.send({ plannerRuns });
+      const { user_run } = response;
+
+      if (!user_run)
+        return res.send({
+          message:
+            "You could not be registered for a run. This event was in the past or you are already registered for this run.",
+        });
+
+      res.send({ user_run });
     })
     .catch((e) => {
       console.error(e);
       res.send(e);
     });
 });
-
-// // Register for a run
-// App.post("/api/register", (req, res) => {
-//   const { runner_id, run_id } = req.body;
-
-//   db.registerForARun({ runner_id, run_id })
-//     .then((response) => {
-//       const { user_run } = response;
-
-//       if (!user_run)
-//         return res.send({
-//           message:
-//             "You could not be registered for a run. This event was in the past or you are already registered for this run.",
-//         });
-
-//       res.send({ user_run });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
 
 App.listen(PORT, () => {
   console.log(
