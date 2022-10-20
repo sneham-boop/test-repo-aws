@@ -268,15 +268,15 @@ App.post("/api/register", cors(corsOptionsDelegate), (req, res, next) => {
 
   db.registerForARun({ runner_id, run_id })
     .then((response) => {
-      const { user_run } = response;
+      const { userRun, message, error } = response;
 
-      if (!user_run)
+      if (!userRun)
         return res.send({
-          message:
-            "You could not be registered for a run. This event was in the past or you are already registered for this run.",
+          message,
+          error,
         });
 
-      res.send({ user_run });
+      res.send({ user_run: userRun, message });
     })
     .catch((e) => {
       console.error(e);
