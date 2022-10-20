@@ -158,24 +158,27 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
   res.send({ user: null, message: "User was successfully logged out." });
 });
 
-// // Add new image when creating a new run
-// App.post(
-//   "/api/image/:runID",
-//   [cors(corsOptionsDelegate), BodyParser.raw({ type: ["image/jpeg", "image/png"], limit: "5mb" })],
-//   (req, res) => {
-//     const { runID } = req.params;
-//     try {
-//       fs.writeFile(`./uploads/${runID}.jpeg`, req.body, (error) => {
-//         if (error) {
-//           throw error;
-//         }
-//       });
-//       res.sendStatus(200);
-//     } catch (error) {
-//       res.sendStatus(500);
-//     }
-//   }
-// );
+// Add new image when creating a new run
+App.post(
+  "/api/image/:runID",
+  [
+    cors(corsOptionsDelegate),
+    BodyParser.raw({ type: ["image/jpeg", "image/png"], limit: "5mb" }),
+  ],
+  (req, res) => {
+    const { runID } = req.params;
+    try {
+      fs.writeFile(`./uploads/${runID}.jpeg`, req.body, (error) => {
+        if (error) {
+          throw error;
+        }
+      });
+      res.sendStatus(200);
+    } catch (error) {
+      res.sendStatus(500);
+    }
+  }
+);
 
 App.post("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
   const {
