@@ -100,55 +100,41 @@ App.get("/api/runs/image/:id", cors(corsOptionsDelegate), (req, res, next) => {
 });
 
 //Users
+App.post("/api/users", (req, res) => {
+  const { name, email, password, phone, gender, age, planner, runner } =
+    req.body;
 
-// App.get("/api/users/:id", (req, res) => {
-//   const { id } = req.params;
-//   db.getUser(id)
-//     .then((response) => {
-//       const { user } = response;
-//       if (!user) res.send({ message: "User was not found" });
-//       res.send({ user });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
+  const hashedPassword = Bcrypt.hashSync(password, 10);
 
-// App.post("/api/users", (req, res) => {
-//   const { name, email, password, phone, gender, age, planner, runner } =
-//     req.body;
+  const newUserMessage =
+    "Welcome to WeRun! Your account has been created. Join your first run now and put on your running shoes!";
 
-//   const hashedPassword = Bcrypt.hashSync(password, 10);
-
-//   const newUserMessage =
-//     "Welcome to WeRun! Your account has been created. Join your first run now and put on your running shoes!";
-
-//   db.createUser({
-//     name,
-//     email,
-//     hashedPassword,
-//     phone,
-//     gender,
-//     age,
-//     planner,
-//     runner,
-//   })
-//     .then((response) => {
-//       const { user } = response;
-//       if (!user) res.send({ message: "User was not created" });
-//       sendUserText(user.phone, newUserMessage);
-//       res.send({
-//         message:
-//           "Account created successfully! You will shortly receive a text message to confirm.",
-//         user: user,
-//       });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
+  db.createUser({
+    name,
+    email,
+    hashedPassword,
+    phone,
+    gender,
+    age,
+    planner,
+    runner,
+  })
+    .then((response) => {
+      const { user, error } = response;
+      if (!user || error) return res.send({ message: "User was not created" });
+      // sendUserText(user.phone, newUserMessage);
+      res.send({
+        message:
+          "Account created successfully! You will shortly receive a text message to confirm.",
+        user: user,
+        error: error
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
+});
 
 // App.put("/api/users/:id", (req, res) => {
 //   res.send();
@@ -258,13 +244,6 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
 //     });
 // });
 
-// App.put("/api/runs/:id", (req, res) => {
-//   res.send();
-// });
-
-// App.delete("/api/runs/:id", (req, res) => {
-//   res.send();
-// });
 
 // Users runs
 // Runner
