@@ -19,10 +19,6 @@ App.use(
   })
 );
 
-// const corsOptionsDelegate = {
-//   origin: 'https://werun-app.netlify.app',
-//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// }
 
 const allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
 const corsOptionsDelegate = function (req, callback) {
@@ -182,46 +178,46 @@ App.post("/api/logout", cors(corsOptionsDelegate), (req, res, next) => {
 //   }
 // );
 
-// App.post("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
-//   const {
-//     name,
-//     description,
-//     location,
-//     distance,
-//     time,
-//     date,
-//     lat,
-//     lng,
-//     planner_id,
-//     location_to,
-//     latitude_to,
-//     longitude_to,
-//   } = req.body;
+App.post("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
+  const {
+    name,
+    description,
+    location,
+    distance,
+    time,
+    date,
+    lat,
+    lng,
+    planner_id,
+    location_to,
+    latitude_to,
+    longitude_to,
+  } = req.body;
 
-//   db.createRun({
-//     name,
-//     description,
-//     location,
-//     distance,
-//     time,
-//     date,
-//     latitude: lat,
-//     longitude: lng,
-//     location_to,
-//     latitude_to,
-//     longitude_to,
-//     planner_id,
-//   })
-//     .then((response) => {
-//       const { run } = response;
-//       if (!run) res.send({ message: "Run was not created" });
-//       res.send({ run });
-//     })
-//     .catch((e) => {
-//       console.error(e);
-//       res.send(e);
-//     });
-// });
+  db.createRun({
+    name,
+    description,
+    location,
+    distance,
+    time,
+    date,
+    latitude: lat,
+    longitude: lng,
+    location_to,
+    latitude_to,
+    longitude_to,
+    planner_id,
+  })
+    .then((response) => {
+      const { run } = response;
+      if (!run) res.send({ message: "Run was not created" });
+      res.send({ run });
+    })
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
+});
 
 // Users runs
 // Runner
