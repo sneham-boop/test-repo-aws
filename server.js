@@ -100,7 +100,7 @@ App.get("/api/runs/image/:id", cors(corsOptionsDelegate), (req, res, next) => {
 });
 
 //Users
-App.post("/api/users", (req, res) => {
+App.post("/api/users", cors(corsOptionsDelegate), (req, res, next) => {
   const { name, email, password, phone, gender, age, planner, runner } =
     req.body;
 
