@@ -19,7 +19,6 @@ App.use(
   })
 );
 
-
 const allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions;
@@ -209,9 +208,10 @@ App.post("/api/runs", cors(corsOptionsDelegate), (req, res, next) => {
     planner_id,
   })
     .then((response) => {
-      const { run } = response;
-      if (!run) res.send({ message: "Run was not created" });
-      res.send({ run });
+      const { run, error } = response;
+      if (!run || error) res.send({ message: "Run was not created.", error });
+
+      res.send({ run, message: "Run was created successfully!" });
     })
     .catch((e) => {
       console.error(e);
