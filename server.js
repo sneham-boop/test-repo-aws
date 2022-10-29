@@ -283,6 +283,27 @@ App.post("/api/register", cors(corsOptionsDelegate), (req, res, next) => {
     });
 });
 
+// Add time for run
+App.put('/api/runs/runner/:id', cors(corsOptionsDelegate), (req, res, next) => {
+  const { runner_id, run_id, time } = req.body;
+  db.updateRunTime({ runner_id, run_id, time })
+    .then((response) => {
+      const { run, message, error } = response;
+
+      if (!run)
+        return res.send({
+          message,
+          error,
+        });
+
+      res.send({ run, message });
+    })
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
+})
+
 App.listen(PORT, () => {
   console.log(
     `Express seems to be listening on port ${PORT} so that's pretty good 👍`
