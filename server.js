@@ -19,7 +19,7 @@ App.use(
   })
 );
 
-const allowlist = ["https://werun-app.netlify.app", "http://localhost:3000"];
+const allowlist = ["https://wehike-app.netlify.app", "http://localhost:3000"];
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
